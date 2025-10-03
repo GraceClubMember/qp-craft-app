@@ -3,12 +3,12 @@ import { handleAuthState, setupLoginListener } from './auth-manager.js';
 import { setupQuestionForms, setupQuestionBank } from './question-manager.js';
 
 // App ko shuru karein
-functioninitializeApp() {
+function initializeApp() {
     handleAuthState();
     setupLoginListener();
     setupQuestionForms();
     setupQuestionBank();
 }
 
-// App chalaayein
-initializeApp();
+// Jab poora HTML page ban jaaye, tab app chalaayein
+document.addEventListener('DOMContentLoaded', initializeApp);
