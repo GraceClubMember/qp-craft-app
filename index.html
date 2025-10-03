@@ -18,6 +18,7 @@
             <!-- ===== ADMIN SECTION ===== -->
             <section id="admin-panel" class="hidden">
                 <h2>Admin Panel</h2>
+                <!-- Single Question Form -->
                 <div class="form-wrapper">
                     <h3>Add Single Question</h3>
                     <form id="add-question-form">
@@ -32,6 +33,7 @@
                     </form>
                 </div>
                 
+                <!-- Bulk Upload Section -->
                 <div class="form-wrapper">
                     <h3>Bulk Upload Questions</h3>
                     <p>Upload a CSV file with columns: <strong>board,grade,subject,chapter,questionType,questionText,answer</strong></p>
@@ -49,7 +51,6 @@
                     <input type="text" id="filter-grade" placeholder="Enter Grade (e.g., 10th)">
                     <input type="text" id="filter-subject" placeholder="Enter Subject (e.g., Physics)">
                     <input type="text" id="filter-chapter" placeholder="Enter Chapter (e.g., Light)">
-                    <!-- YAHAN NAYA DROPDOWN JODA GAYA HAI -->
                     <select id="filter-question-type"><option value="">Select Question Type</option><option>MCQ</option><option>Short Answer</option><option>Long Answer</option></select>
                     <button id="fetch-questions-btn">Show Questions</button>
                 </div>
@@ -59,6 +60,7 @@
             </section>
         </main>
         
+        <!-- ===== LOGIN SECTION ===== -->
         <section id="login-section">
             <h2>Login to QP Craft</h2>
             <form id="login-form">
@@ -69,7 +71,12 @@
         </section>
     </div>
 
+    <!-- Papa Parse Library for CSV reading -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
-    <script type="module" src="script.js"></script>
+    
+    <!-- YAHAN BADLAV KIYA GAYA HAI -->
+    <!-- Our NEW main script -->
+    <script type="module" src="main.js"></script>
+
 </body>
 </html>
