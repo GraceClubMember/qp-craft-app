@@ -11,29 +11,39 @@
     <div class="container">
         <header>
             <h1>QP Craft</h1>
-            <div id="auth-container">
-                <!-- Login/Logout buttons yahan aayenge -->
-            </div>
+            <div id="auth-container"></div>
         </header>
 
         <main id="app-content" class="hidden">
-            <!-- ===== ADMIN SECTION - Sirf Admin ke liye ===== -->
+            <!-- ===== ADMIN SECTION ===== -->
             <section id="admin-panel" class="hidden">
-                <h2>Admin: Add New Question</h2>
-                <form id="add-question-form">
-                    <select id="form-board" required><option value="">Select Board</option><option>CBSE</option><option>ICSE</option><option>State Board</option></select>
-                    <input type="text" id="form-grade" placeholder="Grade (e.g., 10th)" required>
-                    <input type="text" id="form-subject" placeholder="Subject (e.g., Physics)" required>
-                    <input type="text" id="form-chapter" placeholder="Chapter (e.g., Light)" required>
-                    <select id="form-question-type" required><option value="">Select Question Type</option><option>MCQ</option><option>Short Answer</option><option>Long Answer</option></select>
-                    <textarea id="form-question-text" placeholder="Enter the question here..." required></textarea>
-                    <textarea id="form-answer" placeholder="Enter the answer here..." required></textarea>
-                    <input type="number" id="form-marks" placeholder="Marks (e.g., 5)" required>
-                    <button type="submit">Add Question</button>
-                </form>
+                <h2>Admin Panel</h2>
+                <!-- Single Question Form -->
+                <div class="form-wrapper">
+                    <h3>Add Single Question</h3>
+                    <form id="add-question-form">
+                        <select id="form-board" required><option value="">Select Board</option><option>CBSE</option><option>ICSE</option><option>State Board</option></select>
+                        <input type="text" id="form-grade" placeholder="Grade (e.g., 10th)" required>
+                        <input type="text" id="form-subject" placeholder="Subject (e.g., Physics)" required>
+                        <input type="text" id="form-chapter" placeholder="Chapter (e.g., Light)" required>
+                        <select id="form-question-type" required><option value="">Select Question Type</option><option>MCQ</option><option>Short Answer</option><option>Long Answer</option></select>
+                        <textarea id="form-question-text" placeholder="Enter the question here..." required></textarea>
+                        <textarea id="form-answer" placeholder="Enter the answer here..." required></textarea>
+                        <button type="submit">Add Question</button>
+                    </form>
+                </div>
+                
+                <!-- Bulk Upload Section -->
+                <div class="form-wrapper">
+                    <h3>Bulk Upload Questions</h3>
+                    <p>Upload a CSV file with columns: <strong>board,grade,subject,chapter,questionType,questionText,answer</strong></p>
+                    <input type="file" id="csv-file-input" accept=".csv">
+                    <button id="upload-csv-btn">Upload from CSV</button>
+                    <div id="upload-status" class="hidden"></div>
+                </div>
             </section>
 
-            <!-- ===== QUESTION BANK SECTION - Sabke liye ===== -->
+            <!-- ===== QUESTION BANK SECTION ===== -->
             <section id="question-bank">
                 <h2>Question Bank</h2>
                 <div id="filter-container">
@@ -44,12 +54,12 @@
                     <button id="fetch-questions-btn">Show Questions</button>
                 </div>
                 <div id="questions-list">
-                    <p>Please select filters and click "Show Questions" to see questions.</p>
+                    <p>Please select filters and click "Show Questions".</p>
                 </div>
             </section>
         </main>
         
-        <!-- Login Form - Shuru me dikhega -->
+        <!-- ===== LOGIN SECTION ===== -->
         <section id="login-section">
             <h2>Login to QP Craft</h2>
             <form id="login-form">
@@ -60,6 +70,9 @@
         </section>
     </div>
 
+    <!-- Papa Parse Library for CSV reading -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
+    <!-- Our main script -->
     <script type="module" src="script.js"></script>
 </body>
 </html>
