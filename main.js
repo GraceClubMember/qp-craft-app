@@ -1,14 +1,12 @@
-// Doosri files se functions ko import karein
 import { handleAuthState, setupLoginListener } from './auth-manager.js';
-import { setupQuestionForms, setupQuestionBank } from './question-manager.js';
+import { setupQuestionForms, setupQuestionBank, loadDropdownOptions } from './question-manager.js'; // loadDropdownOptions ko import kiya
 
-// App ko shuru karein
 function initializeApp() {
     handleAuthState();
     setupLoginListener();
+    loadDropdownOptions(); // Dropdowns ko load karne ke liye call kiya
     setupQuestionForms();
     setupQuestionBank();
 }
 
-// Jab poora HTML page ban jaaye, tab app chalaayein
 document.addEventListener('DOMContentLoaded', initializeApp);

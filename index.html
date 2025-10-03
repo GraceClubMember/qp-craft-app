@@ -23,10 +23,10 @@
                     <h3>Add Single Question</h3>
                     <form id="add-question-form">
                         <select id="form-board" required><option value="">Select Board</option><option>CBSE</option><option>ICSE</option><option>State Board</option></select>
-                        <input type="text" id="form-grade" placeholder="Grade (e.g., 10th)" required>
-                        <input type="text" id="form-subject" placeholder="Subject (e.g., Physics)" required>
-                        <input type="text" id="form-chapter" placeholder="Chapter (e.g., Light)" required>
-                        <select id="form-question-type" required><option value="">Select Question Type</option><option>MCQ</option><option>Short Answer</option><option>Long Answer</option></select>
+                        <select id="form-grade" required><option value="">Select Grade</option></select>
+                        <select id="form-subject" required><option value="">Select Subject</option></select>
+                        <input type="text" id="form-chapter" placeholder="Chapter Name (will be added automatically)" required>
+                        <select id="form-question-type" required><option value="">Select Question Type</option></select>
                         <textarea id="form-question-text" placeholder="Enter the question here..." required></textarea>
                         <textarea id="form-answer" placeholder="Enter the answer here..." required></textarea>
                         <button type="submit">Add Question</button>
@@ -47,36 +47,26 @@
             <section id="question-bank">
                 <h2>Question Bank</h2>
                 <div id="filter-container">
-                    <select id="filter-board"><option value="">Select Board</option><option>CBSE</option><option>ICSE</option><option>State Board</option></select>
-                    <input type="text" id="filter-grade" placeholder="Enter Grade (e.g., 10th)">
-                    <input type="text" id="filter-subject" placeholder="Enter Subject (e.g., Physics)">
-                    <input type="text" id="filter-chapter" placeholder="Enter Chapter (e.g., Light)">
-                    <select id="filter-question-type"><option value="">Select Question Type</option><option>MCQ</option><option>Short Answer</option><option>Long Answer</option></select>
+                    <select id="filter-board"><option value="">Select Board</option></select>
+                    <select id="filter-grade" disabled><option value="">Select Board First</option></select>
+                    <select id="filter-subject" disabled><option value="">Select Grade First</option></select>
+                    <select id="filter-chapter" disabled><option value="">Select Subject First</option></select>
+                    <select id="filter-question-type" disabled><option value="">Select Chapter First</option></select>
                     <button id="fetch-questions-btn">Show Questions</button>
                 </div>
                 <div id="questions-list">
-                    <p>Please select filters and click "Show Questions".</p>
+                    <p>Please select filters to see questions.</p>
                 </div>
             </section>
         </main>
         
-        <!-- ===== LOGIN SECTION ===== -->
         <section id="login-section">
-            <h2>Login to QP Craft</h2>
-            <form id="login-form">
-                <input type="email" id="login-email" placeholder="Email" required>
-                <input type="password" id="login-password" placeholder="Password" required>
-                <button type="submit">Login</button>
-            </form>
+             <!-- Login form yahan hai... -->
         </section>
     </div>
 
-    <!-- Papa Parse Library for CSV reading -->
+    <!-- Libraries and Scripts -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
-    
-    <!-- YAHAN BADLAV KIYA GAYA HAI -->
-    <!-- Our NEW main script -->
     <script type="module" src="main.js"></script>
-
 </body>
 </html>
