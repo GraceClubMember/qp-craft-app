@@ -1,7 +1,7 @@
 // Firebase SDKs ko import karein
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
 import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
-import { getFirestore, doc, getDoc, setDoc, collection, query, where, getDocs, orderBy, deleteDoc, writeBatch } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
+import { getFirestore, doc, getDoc, setDoc, collection, query, where, getDocs, deleteDoc, writeBatch } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
 
 // YOUR FIREBASE CONFIG
 const firebaseConfig = {
@@ -17,6 +17,7 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
+// HTML Elements
 const loginSection = document.getElementById('login-section');
 const appContent = document.getElementById('app-content');
 const adminPanel = document.getElementById('admin-panel');
@@ -30,7 +31,7 @@ const uploadStatus = document.getElementById('upload-status');
 
 let currentUserRole = null;
 
-// User Auth State
+// Auth State Logic
 onAuthStateChanged(auth, async (user) => {
     if (user) {
         loginSection.classList.add('hidden');
@@ -52,9 +53,8 @@ onAuthStateChanged(auth, async (user) => {
 // Login Logic
 document.getElementById('login-form').addEventListener('submit', (e) => {
     e.preventDefault();
-    const email = document.getElementById('login-email').value;
-    const password = document.getElementById('login-password').value;
-    signInWithEmailAndPassword(auth, email, password).catch(error => alert(error.message));
+    signInWithEmailAndPassword(auth, e.target['login-email'].value, e.target['login-password'].value)
+        .catch(error => alert(error.message));
 });
 
 // Add Single Question Logic
@@ -71,111 +71,83 @@ addQuestionForm.addEventListener('submit', async (e) => {
         createdAt: new Date(),
         addedBy: auth.currentUser.uid
     };
-
     try {
         const newQuestionRef = doc(collection(db, "questions"));
         await setDoc(newQuestionRef, questionData);
         alert("Question added successfully!");
         addQuestionForm.reset();
     } catch (error) {
-        console.error("Error adding question:", error);
         alert("Failed to add question.");
     }
 });
 
-// Bulk Upload from CSV Logic
+// Bulk Upload Logic
 uploadCsvBtn.addEventListener('click', () => {
     const file = csvFileInput.files[0];
-    if (!file) {
-        alert("Please select a CSV file first.");
-        return;
-    }
+    if (!file) return alert("Please select a CSV file first.");
 
     Papa.parse(file, {
         header: true,
         skipEmptyLines: true,
         complete: async (results) => {
             const questions = results.data;
-            if (questions.length === 0) {
-                alert("CSV file is empty or invalid.");
-                return;
-            }
-
+            if (questions.length === 0) return alert("CSV file is empty or invalid.");
             uploadStatus.classList.remove('hidden');
-            uploadStatus.textContent = `Uploading ${questions.length} questions... Please wait.`;
-
+            uploadStatus.textContent = `Uploading ${questions.length} questions...`;
             try {
-                // Batch write ka istemaal karein for efficiency
                 const batch = writeBatch(db);
                 questions.forEach(q => {
-                    // Check karein ki saare required columns maujood hain
-                    if (!q.board || !q.grade || !q.subject || !q.chapter || !q.questionType || !q.questionText || !q.answer) {
-                        console.warn("Skipping invalid row:", q);
-                        return; // Invalid row ko skip karein
-                    }
+                    if (!q.board || !q.grade || !q.subject || !q.chapter || !q.questionType || !q.questionText || !q.answer) return;
                     const newQuestionRef = doc(collection(db, "questions"));
-                    const questionData = {
-                        ...q,
-                        createdAt: new Date(),
-                        addedBy: auth.currentUser.uid
-                    };
-                    batch.set(newQuestionRef, questionData);
+                    batch.set(newQuestionRef, { ...q, createdAt: new Date(), addedBy: auth.currentUser.uid });
                 });
-
                 await batch.commit();
                 uploadStatus.textContent = `Successfully uploaded ${questions.length} questions!`;
-                csvFileInput.value = ''; // File input ko reset karein
+                csvFileInput.value = '';
                 setTimeout(() => uploadStatus.classList.add('hidden'), 5000);
             } catch (error) {
-                console.error("Error in bulk upload: ", error);
-                uploadStatus.textContent = "Error during upload. Check console.";
+                uploadStatus.textContent = "Error during upload.";
             }
         },
-        error: (error) => {
-            alert("Error parsing CSV file: " + error.message);
-        }
+        error: (err) => alert("Error parsing CSV: " + err.message)
     });
 });
 
-
-// "Show Questions" button ka logic
+// "Show Questions" Button Logic
 fetchQuestionsBtn.addEventListener('click', () => {
     const board = document.getElementById('filter-board').value;
     const grade = document.getElementById('filter-grade').value;
     const subject = document.getElementById('filter-subject').value;
     const chapter = document.getElementById('filter-chapter').value;
+    const questionType = document.getElementById('filter-question-type').value; // Naya filter
     
-    if (!board || !grade || !subject || !chapter) {
-        alert("Please fill all the filters to search for questions.");
+    if (!board || !grade || !subject || !chapter || !questionType) { // Naya check
+        alert("Please fill all 5 filters to search for questions.");
         return;
     }
-    
-    fetchAndDisplayQuestions(board, grade, subject, chapter);
+    fetchAndDisplayQuestions(board, grade, subject, chapter, questionType); // Naya argument
 });
 
-// Firestore se questions laane aur dikhane ka function
-async function fetchAndDisplayQuestions(board, grade, subject, chapter) {
+// Fetch and Display Questions Function
+async function fetchAndDisplayQuestions(board, grade, subject, chapter, questionType) { // Naya parameter
     questionsList.innerHTML = '<p>Loading questions...</p>';
-    
     try {
+        // YAHAN QUERY KO UPDATE KIYA GAYA HAI
         const q = query(
             collection(db, "questions"),
             where("board", "==", board),
             where("grade", "==", grade),
             where("subject", "==", subject),
             where("chapter", "==", chapter),
-            // marks ab nahi hai, to hum createdAt se sort kar sakte hain
-            orderBy("createdAt", "desc")
+            where("questionType", "==", questionType) // Naya filter
+            // KOI BHI orderBy nahi hai
         );
-
         const querySnapshot = await getDocs(q);
-        
         if (querySnapshot.empty) {
             questionsList.innerHTML = '<p>No questions found for this selection.</p>';
             return;
         }
-
-        questionsList.innerHTML = ''; 
+        questionsList.innerHTML = '';
         querySnapshot.forEach((doc) => {
             const question = doc.data();
             const questionId = doc.id;
@@ -200,12 +172,12 @@ async function fetchAndDisplayQuestions(board, grade, subject, chapter) {
             questionsList.appendChild(card);
         });
     } catch (error) {
-        console.error("Error fetching questions:", error);
-        questionsList.innerHTML = '<p>Error loading questions. You may need to create an index in Firestore. Check console for the link.</p>';
+        console.error(error);
+        questionsList.innerHTML = '<p>Error loading questions. Please try again.</p>';
     }
 }
 
-// Show Answer, Delete, Checkbox ke liye Event Listener
+// Event Listeners for Question Cards
 questionsList.addEventListener('click', async (e) => {
     const target = e.target;
     if (target.classList.contains('answer-btn')) {
@@ -215,18 +187,13 @@ questionsList.addEventListener('click', async (e) => {
     }
     if (target.classList.contains('delete-btn')) {
         const questionId = target.dataset.id;
-        if (confirm("Are you sure you want to delete this question?")) {
+        if (confirm("Are you sure?")) {
             try {
                 await deleteDoc(doc(db, "questions", questionId));
-                alert("Question deleted successfully!");
                 target.closest('.question-card').remove();
             } catch (error) {
-                console.error("Error deleting question:", error);
                 alert("Failed to delete question.");
             }
         }
-    }
-    if (target.classList.contains('question-checkbox')) {
-        // Future logic
     }
 });
